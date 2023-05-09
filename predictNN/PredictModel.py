@@ -27,8 +27,8 @@ class PredicModel:
                     preditedValue = catBoostModel.predict(Pool(dfToPredict))[0]
                     predictedDataframe = predictedDataframe.append({'Drug': drug, 'Prediction' : preditedValue}, ignore_index=True)
             
-            predictedDataframe.to_json('predicted.json')
-            incorrectDataframe.to_json('incorrectMolecles.json')
+            predictedDataframe.to_csv('predicted.csv')
+            incorrectDataframe.to_csv('incorrectMolecles.csv')
         else:
             inputSmiles = dataList[0]
             print(f'inputSmiles: {inputSmiles}')

@@ -1,13 +1,18 @@
+from importlib.util import module_for_loader
 import tkinter as tk
 from predictNN.PredictModel import PredicModel
 from utils.utils import getDataFrame
 from fileinput import filename
 from tkinter.filedialog import askopenfile
 from tkinter.messagebox import showerror
+from tkinter import Canvas, PhotoImage
 from rdkit import Chem
+from rdkit.Chem import Draw
+from PIL import Image, ImageTk
 
 inputCaption = None
 dataFrame = None
+img = None
 formState = {
     'fileInput' : None,
     'smilesInput' : None
@@ -42,6 +47,14 @@ def submitForm():
             showerror('Ошибка преобразования', 'Невозможно распознать молекулу')
             return
         answerPredict.config(text=str(predictedValue))
+        mol = Chem.MolFromSmiles(formState['smilesInput'])
+        molImage = Draw.MolToImage(mol, size=(200, 200))
+        img = ImageTk.PhotoImage(molImage)
+        labl = tk.Label(window, image=img)
+        labl.image = img
+        labl.grid(row=3, column=0)
+        
+
     else:
         drugList = list(formState['fileInput']['Drug'])
         predictedValue = predictModel.predict(drugList)
@@ -59,18 +72,13 @@ def openFile():
     except Exception as error:
         showerror('Ошибка чтения файла', message=error)
     
-    
-    """ if formState['fileInput'] is None:
-        fileButtonCaption.config(text='Не содержит столбца SMILES')
-    elif formState['fileInput'] == 'No columns to parse from file':
-        fileButtonCaption.config(text=dataFrame)
-    else: """
-    
 
 if __name__ == '__main__':
     window = tk.Tk()
     window.title('ChemReview')
     window.geometry('800x600')
+
+    
 
     smilesInput = tk.Entry(window, width=60, justify=tk.CENTER)
     smilesInput.grid(row=0, column=0)
@@ -85,7 +93,7 @@ if __name__ == '__main__':
     fileButton.grid(row=1, column=1)
 
     answerPredict = tk.Label(window, text='Predicted value: ')
-    answerPredict.grid(row=2, column=2)
+    answerPredict.grid(row=2, column=1)
 
     smilesInput.bind('<KeyRelease>', validateSmiles)
     window.mainloop()
