@@ -11,37 +11,21 @@ class PredicModel:
     def __init__(self):
         self._mpnnModel = load_pretrained('MPNN_attentivefp_PCBA')
     
-    def predict(self, dataList):
-        if len(dataList) != 1:
-            predictedDataframe = pandas.DataFrame({'Drug': [], 'Prediction' : []})
-            incorrectDataframe = pandas.DataFrame({'Drug' : []})
-            for drug in dataList:
-                featuresDict = self._getDictFeatures(drug)
-                if featuresDict is None:
-                    incorrectDataframe = incorrectDataframe.append({'Drug' : drug }, ignore_index=True)
-                else:
+    def predict(self, smiles):
 
-                    dfToPredict = self._dictToDf(featuresDict)
-                    catBoost = CatBoostRegressor()
-                    catBoostModel = catBoost.load_model('predictModel.cbm')
-                    preditedValue = catBoostModel.predict(Pool(dfToPredict))[0]
-                    predictedDataframe = predictedDataframe.append({'Drug': drug, 'Prediction' : preditedValue}, ignore_index=True)
+        featuresDict = self._getDictFeatures(smiles)
+        if featuresDict is None:
+            return None
             
-            predictedDataframe.to_csv('predicted.csv')
-            incorrectDataframe.to_csv('incorrectMolecles.csv')
-        else:
-            inputSmiles = dataList[0]
-            print(f'inputSmiles: {inputSmiles}')
-            featuresDict = self._getDictFeatures(inputSmiles)
-            if featuresDict is None:
-                return None
-            dfToPredict = self._dictToDf(featuresDict)
-            catBoost = CatBoostRegressor()
-            catBoostModel = catBoost.load_model('predictModel.cbm')
-            return catBoostModel.predict(Pool(dfToPredict))[0]
+        dfToPredict = self._dictToDf(featuresDict)
+        catBoost = CatBoostRegressor()
+        catBoostModel = catBoost.load_model('predictModel.cbm')
+        preditedValue = catBoostModel.predict(Pool(dfToPredict))[0]
 
-    def _extractEmbedding(self, smilesString):
-        drugMol = Chem.MolFromSmiles(smilesString)
+        return preditedValue
+
+    def _extractEmbedding(self, smiles):
+        drugMol = Chem.MolFromSmiles(smiles)
 
         atomFeaturizer = AttentiveFPAtomFeaturizer()
         bondFeaturizer = AttentiveFPBondFeaturizer()
@@ -57,7 +41,7 @@ class PredicModel:
   
         drugBondFeaturesExtend = torch.tensor(temporaryList, dtype=torch.float)
 
-        drugGraph = smiles_to_bigraph(smilesString)
+        drugGraph = smiles_to_bigraph(smiles)
         self._mpnnModel.eval()
         embedding = self._mpnnModel(drugGraph, drugAtomsFeatures['h'], drugBondFeaturesExtend)
 

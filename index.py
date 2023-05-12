@@ -1,9 +1,13 @@
 from importlib.util import module_for_loader
+# сервисы
+from services.InputPredictService import InputPredictService
+from services.FilePredictService import FilePredictService
+
 import tkinter as tk
 from predictNN.PredictModel import PredicModel
-from utils.utils import getDataFrame
+from utils.utils import getDataFrame, getDataFrameFromDict, createCsvFile
 from fileinput import filename
-from tkinter.filedialog import askopenfile
+from tkinter.filedialog import askopenfile, asksaveasfile
 from tkinter.messagebox import showerror
 from tkinter import Canvas, PhotoImage
 from rdkit import Chem
@@ -42,13 +46,15 @@ def validateSmiles(event):
 def submitForm():
     predictModel = PredicModel()
     if formState['smilesInput']:
-        predictedValue = predictModel.predict([formState['smilesInput']])
+        predictService = InputPredictService(formState['smilesInput'], predictModel.predict)
+        predictedValue = predictService.process()
+        #predictedValue = predictModel.predict(formState['smilesInput'])
         if predictedValue is None:
             showerror('Ошибка преобразования', 'Невозможно распознать молекулу')
             return
-        answerPredict.config(text=str(predictedValue))
+        answerPredict.config(text=f'Predicted value: {str(predictedValue)}')
         mol = Chem.MolFromSmiles(formState['smilesInput'])
-        molImage = Draw.MolToImage(mol, size=(200, 200))
+        molImage = Draw.MolToImage(mol, size=(300, 300))
         img = ImageTk.PhotoImage(molImage)
         labl = tk.Label(window, image=img)
         labl.image = img
@@ -57,8 +63,11 @@ def submitForm():
 
     else:
         drugList = list(formState['fileInput']['Drug'])
-        predictedValue = predictModel.predict(drugList)
+        predictService = FilePredictService(drugList, predictModel.predict)
         
+        predictedDict, incorrectDict = predictService.process()
+        path = asksaveasfile(defaultextension='.csv')
+        predictedDataFrame = createCsvFile(getDataFrameFromDict(predictedDict), path.name)
 
 def openFile():
     filePath = askopenfile(filetypes=[("CSV Files", "*.csv")])
@@ -92,8 +101,10 @@ if __name__ == '__main__':
     fileButton = tk.Button(window, text='Открыть файл', command=openFile)
     fileButton.grid(row=1, column=1)
 
+
     answerPredict = tk.Label(window, text='Predicted value: ')
-    answerPredict.grid(row=2, column=1)
+    answerPredict.grid(row=6, column=0)
 
     smilesInput.bind('<KeyRelease>', validateSmiles)
+
     window.mainloop()
