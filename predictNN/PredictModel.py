@@ -44,7 +44,7 @@ class PredicModel:
         drugGraph = smiles_to_bigraph(smiles)
         self._mpnnModel.eval()
         embedding = self._mpnnModel(drugGraph, drugAtomsFeatures['h'], drugBondFeaturesExtend)
-
+        
         return embedding
     
     def _getDictFeatures(self, smiles):
@@ -54,6 +54,7 @@ class PredicModel:
             for feature in embedding[0].detach().numpy():
                 index = len(featuresDict)
                 featuresDict[f'feature_{index}'] = feature
+            
             return featuresDict
         return None
 

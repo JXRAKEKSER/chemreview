@@ -5,6 +5,13 @@ class TableRow(ttk.Frame):
     def __init__(self, master=None, state={}, service=None):
         super().__init__(master=master)
         self.grid()
+        """ 
+        state - объект записи из коллекции Prediction 
+        state = {
+            _id: ObjectId,
+            drug: String,
+            prediction: Float64
+        } """
         self._state = state
         self._service = service
 

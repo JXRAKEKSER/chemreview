@@ -18,7 +18,7 @@ from PredictModel import PredicModel
 #data = DrugRes(name = 'GDSC1')
 #df = data.get_data()
 
-def getDataFrame(filePath):
+""" def getDataFrame(filePath):
   try:
     df = pandas.read_csv(filePath)
     if 'SMILES' not in df.columns: return None
@@ -84,7 +84,7 @@ def getDictFeatures(drugRow):
 
 def mape(Y_valid, Y_predict):
   return numpy.mean(numpy.abs((Y_predict - Y_valid)/Y_valid))
-
+ """
 """ optimalCellLineID = findOptimCellLineID(df)
 fullDrugDF = df[df['Cell Line_ID'] == optimalCellLineID]
 fullDrugDF.drop_duplicates(subset='Drug_ID', keep='first', inplace=True)
@@ -127,10 +127,10 @@ print(f'MAE: {mean_absolute_error(Y_test, Y_predict)}') """
 if __name__ == '__main__':
   data = DrugRes(name = 'GDSC1')
   df = data.get_data()
-  featuresRow = getDictFeatures(df.iloc[0])
-
-  predictModel = PredicModel(prepareDataCallback=None)
-  predictModel.predict(list(df.iloc[0]))
+  #featuresRow = getDictFeatures(df.iloc[0])
+  print(df.iloc[0])
+  """ predictModel = PredicModel(prepareDataCallback=None)
+  predictModel.predict(list(df.iloc[0])) """
 
   """ moleculeFeaturesDF = None
   for key in featuresRow:
