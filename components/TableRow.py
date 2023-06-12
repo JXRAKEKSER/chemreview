@@ -2,7 +2,7 @@ from tkinter import ttk
 
 class TableRow(ttk.Frame):
     
-    def __init__(self, master=None, state={}, service=None):
+    def __init__(self, master=None, state={}, service=None, recordTableRowHandler=None):
         super().__init__(master=master)
         self.grid()
         """ 
@@ -14,6 +14,7 @@ class TableRow(ttk.Frame):
         } """
         self._state = state
         self._service = service
+        self._recordTableRowHandler = recordTableRowHandler
 
     def render(self):
         drug = self._state['drug']
@@ -35,3 +36,5 @@ class TableRow(ttk.Frame):
     def _handleDeleteRecord(self):
         self._service.removeRecordById(self._state['_id'])
         self.destroy()
+        if (len(self._service.getAllRecords()) == 0):
+            self._recordTableRowHandler('ad')

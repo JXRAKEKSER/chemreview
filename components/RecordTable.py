@@ -6,11 +6,13 @@ class RecordTable(ttk.Frame):
     def __init__(self,
                  master=None,
                  recordsList=[],
-                 childComponentService=None):
+                 childComponentService=None,
+                 deleteHandler=None):
         super().__init__(master=master)
         self.pack()
         self._recordsList = recordsList
         self._childComponentService = childComponentService
+        self._deleteHandler = deleteHandler
 
     def render(self):
         if (len(self._recordsList) == 0):
@@ -22,5 +24,5 @@ class RecordTable(ttk.Frame):
         for record in self._recordsList:
             TableRow(self,
                      state=record,
-                     service=self._childComponentService).render()
-        
+                     service=self._childComponentService,
+                     recordTableRowHandler=self._deleteHandler).render()

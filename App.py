@@ -62,6 +62,7 @@ class App(tk.Frame):
 
         self._notebookWidget.add(self._predictionFrame, text='Расчёт')
         self._notebookWidget.add(self._historyFrame, text='История')
+        self._notebookWidget.bind('<<NotebookTabChanged>>', self._historyUpdate)
         # инициализация виджетов и их слушателей для окна расчёта
 
         self._smilesInput = tk.Entry(self._predictionFrame, width=60, justify=tkinter.CENTER)
@@ -83,11 +84,13 @@ class App(tk.Frame):
 
         # инициализация виджетов и их слушателей для окна истории
 
-        historyService = HistoryService(self._dbInstanse)
-        self._historyRecords = historyService.getAllRecords()
-        RecordTable(self._historyFrame,
+        self._historyService = HistoryService(self._dbInstanse)
+        self._historyRecords = self._historyService.getAllRecords() 
+        self._recordTable = RecordTable(self._historyFrame,
                     recordsList=self._historyRecords,
-                    childComponentService=historyService).render()
+                    childComponentService=self._historyService,
+                    deleteHandler=self._historyUpdate)
+        self._recordTable.render()
 
 
     def _handleSumbitForm(self):
@@ -129,6 +132,14 @@ class App(tk.Frame):
                 if (incorrectFilePath is not None):
                     createCsvFile(getDataFrameFromDict(incorrectDict), incorrectFilePath.name)
 
+    def _historyUpdate(self, event):
+        self._recordTable.destroy()
+        self._historyRecords = self._historyService.getAllRecords() 
+        self._recordTable = RecordTable(self._historyFrame,
+                    recordsList=self._historyRecords,
+                    childComponentService=self._historyService,
+                    deleteHandler=self._historyUpdate)
+        self._recordTable.render()
 
     def _handleOpenFile(self):
         filePath = askopenfile(filetypes=[("CSV Files", "*.csv")])
