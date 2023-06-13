@@ -13,6 +13,12 @@ class TableRow(ttk.Frame):
             prediction: Float64
         } """
         self._state = state
+        """
+          service - иснтанс класса HistoryService
+          необходим для вызова логики внутри обработчика клика при удалении
+          приходится выполнять такие пробрасывания из-за невозможности предавать данные между событиями
+          по-хорошему эта логика не должна быть внутри презентационного компонента
+          """ 
         self._service = service
         self._recordTableRowHandler = recordTableRowHandler
 

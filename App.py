@@ -98,7 +98,8 @@ class App(tk.Frame):
         predictModel = PredicModel()
 
         if self._state[self.STATE_FORM][self.STATE_FORM_INPUT]:
-            predictService = InputPredictService(self._state[self.STATE_FORM][self.STATE_FORM_INPUT], predictModel.predict)
+            predictService = InputPredictService(self._state[self.STATE_FORM][self.STATE_FORM_INPUT],
+                                                 predictModel.predict)
             self._state[self.STATE_PREDICTION_VALUE] = predictService.process()
             
             if self._state[self.STATE_PREDICTION_VALUE] is None:

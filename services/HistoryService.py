@@ -1,3 +1,6 @@
+"""
+HistoryService - сервис для работы с коллекцией Predictions из базы данных
+"""
 class HistoryService():
     COLLECTION = 'Predictions'
 

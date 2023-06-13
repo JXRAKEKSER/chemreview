@@ -25,6 +25,7 @@ class PredicModel:
         return preditedValue
 
     def _extractEmbedding(self, smiles):
+        # получение объекта молекулы Rdkit
         drugMol = Chem.MolFromSmiles(smiles)
 
         atomFeaturizer = AttentiveFPAtomFeaturizer()
@@ -41,6 +42,7 @@ class PredicModel:
   
         drugBondFeaturesExtend = torch.tensor(temporaryList, dtype=torch.float)
 
+        # получение графового представления на основе smiles
         drugGraph = smiles_to_bigraph(smiles)
         self._mpnnModel.eval()
         embedding = self._mpnnModel(drugGraph, drugAtomsFeatures['h'], drugBondFeaturesExtend)

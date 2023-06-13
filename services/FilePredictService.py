@@ -1,5 +1,11 @@
 from services.AbstractPredictService import AbstractPredictService
 
+""" 
+FilePredictService - сервис, реализующий поведение AbstractPredictService
+необходим для разделения поведения в случае ввода входных данных через файл
+следует open-closed принципу
+ """
+
 class FilePredictService(AbstractPredictService):
    
   def __init__(self, state, predictorCallback):

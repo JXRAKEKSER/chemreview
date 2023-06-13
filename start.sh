@@ -1,0 +1,1 @@
+sudo systemctl start mongod && source tkinterGui/bin/activate && python index.py

@@ -11,6 +11,7 @@ class RecordTable(ttk.Frame):
         super().__init__(master=master)
         self.pack()
         self._recordsList = recordsList
+        # childComponentService инстанс класса сервиса, необходимый потомку
         self._childComponentService = childComponentService
         self._deleteHandler = deleteHandler
 
